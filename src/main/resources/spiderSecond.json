@@ -1,0 +1,25 @@
+{
+  "name": "fm-second",
+  "operateElements": [
+    {
+      "opType": "xpath-a",
+      "name": "detailUrl",
+      "pattern": "//*[@id=\"container\"]/div/div/div[2]/section/div/ul/li/div/a/@href",
+      "detailOperate":{
+        "opType": "for",
+        "name": "urlList",
+        "detailOperate":{
+          "opType": "putUrl",
+          "urlInfo": {
+            "prefix": "https://www.youyangfm.com",
+            "value": "foreach"
+          }
+        }
+      }
+    },{
+      "opType": "createSpider",
+      "resource": "urlList",
+      "createSpiderUrl": "spiderThird.json"
+    }
+  ]
+}

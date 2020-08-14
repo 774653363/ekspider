@@ -1,0 +1,42 @@
+{
+  "skipExists": true,
+  "name": "fm-third",
+  "pipeline": ["id","title","content","picUrl"],
+  "operateElements": [
+    {
+      "opType": "xpath",
+      "name": "title",
+      "pattern": "/html/body/div[1]/div/div/div[2]/h2/text()"
+    },
+    {
+      "opType": "xpath",
+      "name": "content",
+      "pattern": "/html/body/div[1]/div/section[2]/div[2]/div/p[2]/text()"
+    },
+    {
+      "opType": "regex",
+      "resource": "url",
+      "name": "id",
+      "pattern": "https://www\\.youyangfm\\.com/p/[0-9]+/([0-9]+)"
+    },
+    {
+      "opType": "xpath",
+      "name": "picStyle",
+      "pattern": "/html/body/div[1]/div/div/@style",
+      "detailOperate": {
+        "opType": "regex",
+        "name": "picUrl",
+        "pattern": "[\\w\\W]+url\\(([\\w\\W]+)\\)[\\w\\W]+",
+        "detailOperate": {
+          "opType": "download",
+          "downLoadInfo": {
+            "dirName": "id",
+            "fileName": "index",
+            "path": "D:\\download"
+          }
+        }
+      }
+    }
+
+  ]
+}
