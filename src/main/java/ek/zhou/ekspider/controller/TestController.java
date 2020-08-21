@@ -2,20 +2,12 @@ package ek.zhou.ekspider.controller;
 
 import ek.zhou.ekspider.entity.Spider;
 import ek.zhou.ekspider.main.CreateSpider;
-import ek.zhou.ekspider.spider.MySpider;
 import ek.zhou.ekspider.util.JsonUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.processor.PageProcessor;
-import us.codecraft.webmagic.selector.Html;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @description: 测试

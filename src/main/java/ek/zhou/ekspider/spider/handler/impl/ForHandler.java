@@ -7,6 +7,8 @@ import ek.zhou.ekspider.spider.handler.OperateHandler;
 import org.springframework.util.StringUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
+import us.codecraft.webmagic.selector.HtmlNode;
+import us.codecraft.webmagic.selector.Selectable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,18 +25,69 @@ public class ForHandler extends OperateHandler {
     @Override
     public void handle(Page page, OperateElement operateElement) {
         try {
+
             if (!StringUtils.isEmpty(operateElement.getResource())) {
-                List<String> strs = page.getResultItems().get(operateElement.getResource());
                 List<Object> objs = new ArrayList<>();
-                for (String s : strs
-                ) {
-                    OperateElement detailOperate = operateElement.getDetailOperate();
-                    if (null != detailOperate) {
-                        page.putField("foreach", s);
-                        detailOperate.setResource("foreach");
-                        CreateSpider.operate(page, detailOperate);
-                        Object obj = page.getResultItems().get(detailOperate.getName());
-                        objs.add(obj);
+                //strs,进行次数迭代,格式1->3从1到3进行迭代
+                if(page.getResultItems().get(operateElement.getResource())!=null){
+                    if(page.getResultItems().get(operateElement.getResource()) instanceof List){
+                        List<String> strs = page.getResultItems().get(operateElement.getResource());
+                        if(strs!=null&&strs.size()>0){
+                            int i = 0;
+                            for (String s : strs
+                            ) {
+                                OperateElement detailOperate = operateElement.getDetailOperate();
+                                if (null != detailOperate) {
+                                    page.putField("forIndex", i+"");
+                                    page.putField("foreach", s);
+                                    detailOperate.setResource("foreach");
+                                    CreateSpider.operate(page, detailOperate);
+                                    Object obj = page.getResultItems().get(detailOperate.getName());
+                                    objs.add(obj);
+                                }
+                                i++;
+                            }
+
+                        }
+                    }else if(page.getResultItems().get(operateElement.getResource()) instanceof HtmlNode){
+                        HtmlNode htmlNode =  (HtmlNode)page.getResultItems().get(operateElement.getResource());
+                        List<Selectable> nodes = htmlNode.nodes();
+                        if(nodes!=null&&nodes.size()>0){
+                            int i = 0;
+                            for (Selectable s : nodes
+                            ) {
+                                OperateElement detailOperate = operateElement.getDetailOperate();
+                                if (null != detailOperate) {
+                                    page.putField("forIndex", i+"");
+                                    page.putField("foreach", s);
+                                    detailOperate.setResource("foreach");
+                                    CreateSpider.operate(page, detailOperate);
+                                    Object obj = page.getResultItems().get(detailOperate.getName());
+                                    objs.add(obj);
+                                }
+                                i++;
+                            }
+
+                        }
+                    }
+
+                }
+
+
+                else{
+                    String[] split = operateElement.getResource().split("->");
+                    Integer start = Integer.parseInt(split[0]);
+                    Integer end = Integer.parseInt(split[1]);
+                    for(int i = start;i<=end;i++){
+                        OperateElement detailOperate = operateElement.getDetailOperate();
+                        if (null != detailOperate) {
+                            page.putField("forIndex", i+"");
+                            page.putField("foreach", i+"");
+                            detailOperate.setResource("foreach");
+                            CreateSpider.operate(page, detailOperate);
+                            Object obj = page.getResultItems().get(detailOperate.getName());
+                            objs.add(obj);
+                        }
                     }
                 }
                 page.putField(operateElement.getName(), objs);

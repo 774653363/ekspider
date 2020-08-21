@@ -29,7 +29,7 @@ public class HandlerUtils {
             return -1;//get
         }
         if ("a".equals(strs[1])) {
-            return 0;//get
+            return 0;//all
         }
         if ("s".equals(strs[1])) {
             return 1;//get

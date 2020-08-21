@@ -33,7 +33,11 @@ public class AddUrlHandler extends OperateHandler {
                 }
                 String value = (String) page.getResultItems().get(urlMerge.getValue());
                 if (value != null) {
-                    url.append(value);
+                    if(value.startsWith("./")){
+                        url.append(value.substring(2));
+                    }else{
+                        url.append(value);
+                    }
                 }
                 if (urlMerge.getSuffix() != null) {
                     url.append(urlMerge.getSuffix());
