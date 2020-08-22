@@ -1,0 +1,33 @@
+{
+  "name": "fm",
+  "startUrl": [
+    "https://www.youyangfm.com"
+  ],
+  "thread": "1",
+  "site": {
+  },
+  "operateElements": [
+    {
+      "opType":"xpath-a",
+      "pattern":"/html/body/div[2]/div/section[2]/div/ul/li/div/a[2]/@href",
+      "name": "surl",
+      "detailOperate": {
+        "opType":"for",
+        "name": "surlList",
+        "detailOperate":{
+          "opType": "putUrl",
+          "urlInfo": {
+            "prefix": "https://www.youyangfm.com",
+            "value": "foreach"
+          }
+        }
+      }
+    },{
+      "opType": "createSpider",
+      "resource": "surlList",
+      "createSpiderUrl": "spiderSecond.json"
+
+    }
+  ]
+}
+
