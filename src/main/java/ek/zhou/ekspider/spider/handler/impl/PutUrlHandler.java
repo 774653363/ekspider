@@ -14,6 +14,8 @@ public class PutUrlHandler extends OperateHandler {
         this.method = "putUrl";
         String[] necessary = {"urlInfo","name"};
         this.necessaryColumn.addAll(Arrays.asList(necessary));
+        String[] expression = {"resource","name","urlInfo.prefix","urlInfo.suffix","urlInfo.value"};
+        this.expressionColumn.addAll(Arrays.asList(expression));
     }
 
     @Override

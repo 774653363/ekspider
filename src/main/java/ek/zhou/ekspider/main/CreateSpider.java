@@ -1,5 +1,6 @@
 package ek.zhou.ekspider.main;
 
+import com.alibaba.fastjson.JSONObject;
 import ek.zhou.ekspider.config.RedisConfig;
 import ek.zhou.ekspider.entity.OperateElement;
 import ek.zhou.ekspider.entity.Spider;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;
@@ -28,10 +30,9 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 @Component
-//implements ApplicationRunner
 public class CreateSpider  {
     private static final String keyPrifix= "ekspider:spiders:";
-    private static List<OperateHandler> operateHandlers = new ArrayList<>();
+    private static HashMap<String,OperateHandler> operateHandlerHashMap = new HashMap<>();
     public static MySpider mySpider;
     @Autowired
     public void setMySpider(MySpider mySpider) {
@@ -93,7 +94,8 @@ public class CreateSpider  {
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-                operateHandlers.add(operateHandler);
+                operateHandlerHashMap.put(operateHandler.method,operateHandler);
+
             }
         }
     }
@@ -191,33 +193,101 @@ public class CreateSpider  {
 
     //对操作元素进行解析并执行操作
     public static void operate(Page page, OperateElement operateElement) throws Exception {
-        Class<? extends Html> clazz = page.getHtml().getClass();
+        //解析表达式
+        operateElement=parseExp(operateElement);
+        OperateElement detailOperate = operateElement.getDetailOperate();
+        List<OperateElement> detailOperates = operateElement.getDetailOperates();
+        //解析表达式
+        if (null != detailOperate) {
+            detailOperate = CreateSpider.parseExp(detailOperate);
+        }
+        if(detailOperates!=null&&detailOperates.size()>0) {
+            for (OperateElement opt : detailOperates
+            ) {
+                opt = CreateSpider.parseExp(opt);
+            }
+        }
+        operateElement.setDetailOperate(detailOperate);
+        operateElement.setDetailOperates(detailOperates);
+
         //type由两部分组成,第一部分是操作类型,第二部分是存到page.field的方式-a表示all,-g表示get,-s表示Selectable
         String type = operateElement.getOpType().split("-")[0];
         if(type==null){
             return;
         }
-        for (OperateHandler operateHandler:operateHandlers
-             ) {
-            if(operateHandler.method.equals(type)){
-                operateHandler.handle(page,operateElement);
-            }
 
-        }
+        OperateHandler operateHandler = operateHandlerHashMap.get(type);
+        operateHandler.handle(page,operateElement);
 
 
         //如果DetailOperate的Resource不存在则使用父类的Name作为Resource
         if (operateElement.getDetailOperate() != null && operateElement.getDetailOperate().getResource() == null && operateElement.getName() != null) {
             operateElement.getDetailOperate().setResource(operateElement.getName());
         }
+        //如果DetailOperates下的元素的Resource不存在则使用父类的Name作为Resource
+        if(operateElement.getDetailOperates()!=null&&operateElement.getDetailOperates().size()>0){
+            for (OperateElement opt:operateElement.getDetailOperates()
+                 ) {
+                if (opt != null && opt.getResource() == null && operateElement.getName() != null) {
+                    opt.setResource(operateElement.getName());
+                }
+            }
+        }
         //不是for类型则执行DetailOperate
         if (!"for".equals(operateElement.getOpType())) {
             if (operateElement.getDetailOperate() != null) {
                 operate(page, operateElement.getDetailOperate());
             }
+            if(operateElement.getDetailOperates()!=null&&operateElement.getDetailOperates().size()>0){
+                for (OperateElement opt:operateElement.getDetailOperates()
+                ) {
+                    if (opt!= null) {
+                        operate(page, opt);
+                    }
+
+                }
+
+            }
         }
 
     }
 
+    public static OperateElement parseExp(OperateElement operateElement){
+        //解析表达式
+        String exp = operateElement.getExp();
+        //不为空时进行表达式的解析
+        if(!StringUtils.isEmpty(exp)){
+            String[] split = exp.split(operateElement.getSplitStr());
+            if(split.length>0){
+                String type = split[0];
+                String realType = type.split("-")[0];
+                OperateHandler operateHandler = operateHandlerHashMap.get(realType);
+                List<String> expressionColumn = operateHandler.expressionColumn;
+                String jsonString = JSONObject.toJSONString(operateElement);
+                JSONObject jsonObject = JSONObject.parseObject(jsonString);
+                for (int i = 0 ;i<split.length&&i<expressionColumn.size();i++
+                ) {
+                    String col = expressionColumn.get(i);
+                    String ele = split[i];
+                    if("null".equals(ele)||StringUtils.isEmpty(ele)){
+                        continue;
+                    }
+                    if(col.contains(".")){
+                        String[] strs = col.split("\\.");
+                        JSONObject parent = jsonObject.getJSONObject(strs[0]);
+                        if(parent==null){
+                            parent = new JSONObject();
+                            jsonObject.put(strs[0],parent);
+                        }
+                        parent.put(strs[1],ele);
+                    }else{
+                        jsonObject.put(col,ele);
+                    }
+                }
+                operateElement = JSONObject.toJavaObject(jsonObject, OperateElement.class);
+            }
+        }
+        return operateElement;
+    }
 
 }

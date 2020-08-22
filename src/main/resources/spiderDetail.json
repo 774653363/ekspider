@@ -1,0 +1,25 @@
+{
+  "name": "pdf",
+  "operateElements": [
+    {
+      "exp":"xpath-s##downloadAs#/html/body/div[14]/div[2]/div[2]/ul/li/a"
+    },
+    {
+      "exp":"for#downloadAs",
+      "detailOperate": {
+        "exp":"regex#foreach#downloadUrl#./[0-9]+/P[0-9]+.pdf",
+        "detailOperate": {
+          "exp":"putUrl##concatUrl#http://www.abchina.com/cn/businesses/FinancialMarket/jrscrb/##downloadUrl"
+          },
+            "detailOperates": [
+              {
+                "exp":"regex#foreach#downloadName#金融市场日报[0-9-]+"
+              },{
+                "exp": "download#concatUrl###downloadName#F:\\download\\pdf"
+              }
+            ]
+          }
+        }
+  ]
+}
+

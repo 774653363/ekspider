@@ -17,6 +17,8 @@ public class RegexHandler extends OperateHandler {
         this.method = "regex";
         String[] necessary = {"resource","pattern","name"};
         this.necessaryColumn.addAll(Arrays.asList(necessary));
+        String[] expression = {"resource","name","pattern"};
+        this.expressionColumn.addAll(Arrays.asList(expression));
     }
 
     @Override

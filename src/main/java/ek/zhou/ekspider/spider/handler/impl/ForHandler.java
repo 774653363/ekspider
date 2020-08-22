@@ -20,6 +20,8 @@ public class ForHandler extends OperateHandler {
         this.method = "for";
         String[] necessary = {"resource","detailOperate","name"};
         this.necessaryColumn.addAll(Arrays.asList(necessary));
+        String[] expression = {"resource","name"};
+        this.expressionColumn.addAll(Arrays.asList(expression));
     }
 
     @Override
@@ -28,7 +30,9 @@ public class ForHandler extends OperateHandler {
 
             if (!StringUtils.isEmpty(operateElement.getResource())) {
                 List<Object> objs = new ArrayList<>();
-                //strs,进行次数迭代,格式1->3从1到3进行迭代
+                OperateElement detailOperate = operateElement.getDetailOperate();
+                List<OperateElement> detailOperates = operateElement.getDetailOperates();
+
                 if(page.getResultItems().get(operateElement.getResource())!=null){
                     if(page.getResultItems().get(operateElement.getResource()) instanceof List){
                         List<String> strs = page.getResultItems().get(operateElement.getResource());
@@ -36,7 +40,7 @@ public class ForHandler extends OperateHandler {
                             int i = 0;
                             for (String s : strs
                             ) {
-                                OperateElement detailOperate = operateElement.getDetailOperate();
+
                                 if (null != detailOperate) {
                                     page.putField("forIndex", i+"");
                                     page.putField("foreach", s);
@@ -44,6 +48,17 @@ public class ForHandler extends OperateHandler {
                                     CreateSpider.operate(page, detailOperate);
                                     Object obj = page.getResultItems().get(detailOperate.getName());
                                     objs.add(obj);
+                                }
+                                if(detailOperates!=null&&detailOperates.size()>0){
+                                    for (OperateElement opt:detailOperates
+                                    ) {
+                                        page.putField("forIndex", i+"");
+                                        page.putField("foreach", s);
+                                        opt.setResource("foreach");
+                                        CreateSpider.operate(page, opt);
+                                        Object obj = page.getResultItems().get(opt.getName());
+                                        objs.add(obj);
+                                    }
                                 }
                                 i++;
                             }
@@ -56,7 +71,7 @@ public class ForHandler extends OperateHandler {
                             int i = 0;
                             for (Selectable s : nodes
                             ) {
-                                OperateElement detailOperate = operateElement.getDetailOperate();
+
                                 if (null != detailOperate) {
                                     page.putField("forIndex", i+"");
                                     page.putField("foreach", s);
@@ -64,6 +79,17 @@ public class ForHandler extends OperateHandler {
                                     CreateSpider.operate(page, detailOperate);
                                     Object obj = page.getResultItems().get(detailOperate.getName());
                                     objs.add(obj);
+                                }
+                                if(detailOperates!=null&&detailOperates.size()>0){
+                                    for (OperateElement opt:detailOperates
+                                    ) {
+                                        page.putField("forIndex", i+"");
+                                        page.putField("foreach", s);
+                                        opt.setResource("foreach");
+                                        CreateSpider.operate(page, opt);
+                                        Object obj = page.getResultItems().get(opt.getName());
+                                        objs.add(obj);
+                                    }
                                 }
                                 i++;
                             }
@@ -75,11 +101,12 @@ public class ForHandler extends OperateHandler {
 
 
                 else{
+                    //进行次数迭代,格式1->3从1到3进行迭代
                     String[] split = operateElement.getResource().split("->");
                     Integer start = Integer.parseInt(split[0]);
                     Integer end = Integer.parseInt(split[1]);
                     for(int i = start;i<=end;i++){
-                        OperateElement detailOperate = operateElement.getDetailOperate();
+
                         if (null != detailOperate) {
                             page.putField("forIndex", i+"");
                             page.putField("foreach", i+"");
@@ -88,6 +115,18 @@ public class ForHandler extends OperateHandler {
                             Object obj = page.getResultItems().get(detailOperate.getName());
                             objs.add(obj);
                         }
+                        if(detailOperates!=null&&detailOperates.size()>0){
+                            for (OperateElement opt:detailOperates
+                            ) {
+                                page.putField("forIndex", i+"");
+                                page.putField("foreach", i+"");
+                                opt.setResource("foreach");
+                                CreateSpider.operate(page, opt);
+                                Object obj = page.getResultItems().get(opt.getName());
+                                objs.add(obj);
+                            }
+                        }
+                        i++;
                     }
                 }
                 page.putField(operateElement.getName(), objs);

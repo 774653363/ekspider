@@ -13,10 +13,12 @@ public abstract class OperateHandler {
 
     public String method;
     public List<String> necessaryColumn ;
-
+    public List<String> expressionColumn ;
     public OperateHandler() {
         necessaryColumn = new LinkedList<>();
         necessaryColumn.add("opType");
+        expressionColumn = new LinkedList<>();
+        expressionColumn.add("opType");
     }
 
     public abstract void handle(Page page, OperateElement operateElement);

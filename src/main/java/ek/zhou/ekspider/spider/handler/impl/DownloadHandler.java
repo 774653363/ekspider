@@ -34,6 +34,8 @@ public class DownloadHandler extends OperateHandler {
         this.method = "download";
         String[] necessary = {"resource","downLoadInfo"};
         this.necessaryColumn.addAll(Arrays.asList(necessary));
+        String[] expression = {"resource","downLoadInfo.fileType","downLoadInfo.dirName","downLoadInfo.fileName","downLoadInfo.path"};
+        this.expressionColumn.addAll(Arrays.asList(expression));
     }
 
     @Override

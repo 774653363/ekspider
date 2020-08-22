@@ -16,6 +16,8 @@ public class JsonPathHandler extends OperateHandler {
         this.method = "jsonPath";
         String[] necessary = {"resource","pattern","name"};
         this.necessaryColumn.addAll(Arrays.asList(necessary));
+        String[] expression = {"resource","name","pattern"};
+        this.expressionColumn.addAll(Arrays.asList(expression));
     }
 
     @Override

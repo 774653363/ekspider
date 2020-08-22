@@ -19,7 +19,9 @@ public class AddUrlHandler extends OperateHandler {
     public AddUrlHandler() {
         this.method = "addUrl";
         String[] necessary = {"urlInfo"};
-        this.necessaryColumn.addAll(Arrays.asList(necessary));
+       this.necessaryColumn.addAll(Arrays.asList(necessary));
+        String[] expression = {"resource","name","urlInfo.prefix","urlInfo.suffix","urlInfo.value"};
+        this.expressionColumn.addAll(Arrays.asList(expression));
     }
 
     @Override

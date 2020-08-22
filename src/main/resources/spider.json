@@ -1,33 +1,19 @@
 {
-  "name": "fm",
+  "name": "page",
   "startUrl": [
-    "https://www.youyangfm.com"
+    "http://www.abchina.com/cn/businesses/FinancialMarket/jrscrb/"
   ],
   "thread": "1",
   "site": {
   },
   "operateElements": [
     {
-      "opType":"xpath-a",
-      "pattern":"/html/body/div[2]/div/section[2]/div/ul/li/div/a[2]/@href",
-      "name": "surl",
-      "detailOperate": {
-        "opType":"for",
-        "name": "surlList",
+      "exp": "for#1->25#urlList",
         "detailOperate":{
-          "opType": "putUrl",
-          "urlInfo": {
-            "prefix": "https://www.youyangfm.com",
-            "value": "foreach"
-          }
-        }
+          "exp": "putUrl##perUrl#http://www.abchina.com/cn/businesses/FinancialMarket/jrscrb/default_#.htm#foreach"
       }
     },{
-      "opType": "createSpider",
-      "resource": "surlList",
-      "createSpiderUrl": "spiderSecond.json"
-
+      "exp": "createSpider#urlList#spiderDetail.json"
     }
   ]
 }
-

@@ -20,6 +20,8 @@ public class CreateSpiderHandler extends OperateHandler {
         this.method = "createSpider";
         String[] necessary = {"resource","createSpiderUrl"};
         this.necessaryColumn.addAll(Arrays.asList(necessary));
+        String[] expression = {"resource","createSpiderUrl"};
+        this.expressionColumn.addAll(Arrays.asList(expression));
     }
 
     @Override
