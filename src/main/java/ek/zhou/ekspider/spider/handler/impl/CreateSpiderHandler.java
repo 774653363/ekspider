@@ -13,6 +13,7 @@ import us.codecraft.webmagic.selector.Selectable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class CreateSpiderHandler extends OperateHandler {
@@ -43,10 +44,27 @@ public class CreateSpiderHandler extends OperateHandler {
             if (spider != null) {
                 //如果StartUrl没有配置就从resource中读取,如果有就使用StartUrl
                 if (!StringUtils.isEmpty(resource)) {
-                    List<String> urls = page.getResultItems().get(resource);
-                    if (null != urls && (spider.getStartUrl() == null || spider.getStartUrl().size() == 0)) {
-                        spider.setStartUrl(urls);
+                    Object obj = page.getResultItems().get(resource);
+                    if(obj instanceof List){
+                        List<String> urls = page.getResultItems().get(resource);
+                        if (null != urls) {
+                            if((spider.getStartUrl() != null && spider.getStartUrl().size()> 0)){
+                                urls.addAll(spider.getStartUrl());
+                            }
+                            spider.setStartUrl(urls);
+                        }
+                    }else if(obj instanceof String){
+                        List<String> urls = new LinkedList<>();
+                        String url = page.getResultItems().get(resource);
+                        if (null != url ) {
+                            urls.add(url);
+                            if((spider.getStartUrl() != null && spider.getStartUrl().size()> 0)){
+                                urls.addAll(spider.getStartUrl());
+                            }
+                            spider.setStartUrl(urls);
+                        }
                     }
+
                 }
                 CreateSpider.create(spider);
             }

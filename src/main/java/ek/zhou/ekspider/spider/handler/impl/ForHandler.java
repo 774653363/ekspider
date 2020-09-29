@@ -105,11 +105,11 @@ public class ForHandler extends OperateHandler {
                     String[] split = operateElement.getResource().split("->");
                     Integer start = Integer.parseInt(split[0]);
                     Integer end = Integer.parseInt(split[1]);
-                    for(int i = start;i<=end;i++){
+                    for(int j = start;j<=end;j++){
 
                         if (null != detailOperate) {
-                            page.putField("forIndex", i+"");
-                            page.putField("foreach", i+"");
+                            page.putField("forIndex", j+"");
+                            page.putField("foreach", j+"");
                             detailOperate.setResource("foreach");
                             CreateSpider.operate(page, detailOperate);
                             Object obj = page.getResultItems().get(detailOperate.getName());
@@ -118,15 +118,15 @@ public class ForHandler extends OperateHandler {
                         if(detailOperates!=null&&detailOperates.size()>0){
                             for (OperateElement opt:detailOperates
                             ) {
-                                page.putField("forIndex", i+"");
-                                page.putField("foreach", i+"");
+                                page.putField("forIndex", j+"");
+                                page.putField("foreach", j+"");
                                 opt.setResource("foreach");
                                 CreateSpider.operate(page, opt);
                                 Object obj = page.getResultItems().get(opt.getName());
                                 objs.add(obj);
                             }
                         }
-                        i++;
+
                     }
                 }
                 page.putField(operateElement.getName(), objs);
